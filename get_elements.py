@@ -35,9 +35,9 @@ def extract_full_link(js_command):
     return js_command[13:js_command.index(",")-1]
 
 
-def extract_base_link(js_command):
-    return f"{js_command[13:js_command.index('&')]}"
+def extract_date_link(js_command):
+    return js_command[13:js_command.index('&')].replace("view", "dates")
 
 
 def construct_date_link(link, date1, date2):
-    pass
+    return f"{link}&"

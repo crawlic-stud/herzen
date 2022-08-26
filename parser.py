@@ -39,16 +39,16 @@ def get_schedule_data():
             for study_group, li in zip(study_groups, lis):
                 buttons = get_buttons(li)
                 full_links = [BASE_URL + extract_full_link(btn.get("onclick")) for btn in buttons]
-                base_links = [BASE_URL + extract_base_link(btn.get("onclick")) for btn in buttons]
+                date_links = [BASE_URL + extract_date_link(btn.get("onclick")) for btn in buttons]
 
                 schedule_data[branch][study_form][study_group] = {
                     type_: link
-                    for link_type in zip(full_links, base_links) 
-                    for type_, link in zip(("полное расписание", "базовая ссылка"), link_type) 
+                    for link_type in zip(full_links, date_links) 
+                    for type_, link in zip(("полное расписание", "расписание по датам"), link_type) 
                 } 
                     
 
-    print(json.dumps(schedule_data["Выборгский филиал"], indent=4, ensure_ascii=False))
+    #print(json.dumps(schedule_data["Выборгский филиал"], indent=4, ensure_ascii=False))
     return schedule_data
 
 
