@@ -3,7 +3,7 @@ import bs4
 
 from datetime import datetime, timedelta
 
-import parser
+from . import parser
 
 
 def get_full_schedule_link(branch, study_form, group):
@@ -43,7 +43,7 @@ def process_row(row):
 
     # если есть неделя с временем
     if len(ths) > 1:
-        row_text += f"\n<pre>{ths[0]}</pre>\n<b>неделя</b>: {ths[1]}" if ths[1] else f"\n<pre>{ths[0]}</pre>"
+        row_text += f"\n<pre>{ths[0]}</pre>\n<b>неделя</b>: {ths[1]}" if ths[1] else f"\n<pre>{ths[0]}</pre>\n"
     
     # если есть неделя, но нет времени
     elif any(len(th) < 2 for th in ths):

@@ -1,9 +1,22 @@
-from bot import dp
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
+from config import dp, bot
+
+
 
 
 @dp.message_handler(commands=["start"])
 async def send_start(message):
-    await message.answer("hi!")
+    btns = [InlineKeyboardButton(str(i) * 30, callback_data=str(i) * 10) for i in range(50)]
+    inline_kb = InlineKeyboardMarkup().add()
+    [inline_kb.add(btn) for btn in btns]
+
+    await message.answer("start", reply_markup=inline_kb)
+
+
+@dp.callback_query_handler()
+async def test_query(query, state):
+    await bot.answer_callback_query(query.id, f"выбрано {query.data}")
 
 
 @dp.message_handler(commands=["help"])

@@ -1,9 +1,12 @@
 import logging
+from venv import create
 
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from herzen import parser
-from bot import dp
+from config import dp
+from herzen.get_schedule import get_date_schedule_link, get_full_schedule_link, get_table_from_link, get_today_link
+from utils import create_inline_keyboard
 
 
 # states
@@ -16,15 +19,13 @@ class UserForm(StatesGroup):
 @dp.message_handler(commands=["register"])
 async def start_register(message, state):
     await UserForm.branch.set()
-    await message.answer("Введите филиал/факультет из предложенного списка:")
 
     # saving parsed data to storage
     async with state.proxy() as data:
         data["data"] = parser.get_schedule_data()
-
-        await message.answer("\n".join([f"{i+1}: {branch}" 
-            for i, branch in enumerate(data["data"].keys())]))
-
+        await message.answer("Выберите филиал/факультет из предложенного списка:", 
+            reply_markup=create_inline_keyboard(data["data"].keys()))
+    
 
 @dp.message_handler(commands=["cancel"], state=UserForm.all_states)
 async def cancel_register(message, state):
@@ -59,14 +60,12 @@ async def process_branch(message, state):
         data["study_forms"] = study_forms
         # if more than 1 study form
         if len(study_forms) > 1:
-            await message.answer("Выберите форму обучения:")
-            await message.answer("\n".join([f"{i+1}: {branch}" for i, branch in enumerate(study_forms)]))
+            await message.answer("Выберите форму обучения:", reply_markup=create_inline_keyboard(study_forms))
         else:
             data["study_form"] = study_forms[0]
             groups = list(data["data"][data["branch"]][data["study_form"]])
             data["groups"] = groups
-            await message.answer("Выберите группу:")
-            await message.answer("\n".join([f"{i+1}: {branch}" for i, branch in enumerate(groups)]))
+            await message.answer("Выберите группу:", reply_markup=create_inline_keyboard(groups))
             await UserForm.next()
 
     await UserForm.next()
@@ -82,8 +81,7 @@ async def process_study_form(message, state):
             return
         groups = list(data["data"][data["branch"]][data["study_form"]])
         data["groups"] = groups
-        await message.answer("Выберите группу:")
-        await message.answer("\n".join([f"{i+1}: {group}" for i, group in enumerate(groups)]))
+        await message.answer("Выберите форму обучения:", reply_markup=create_inline_keyboard(data["study_forms"]))
     await UserForm.next()
 
 
@@ -96,5 +94,10 @@ async def process_group(message, state):
             await message.answer("Пожалуйста, введите корректный номер группы.")
             return
 
-        await message.answer(f"{data['branch']}\n{data['study_form']}\n{data['group']}")
+        schedule_data = data['branch'], data['study_form'], data['group']
+
+    link = get_full_schedule_link(*schedule_data)
+    schedule = get_table_from_link(link)
+    await message.answer(schedule)
+
     await state.finish()
