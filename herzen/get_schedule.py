@@ -3,7 +3,7 @@ import bs4
 
 from datetime import datetime, timedelta
 
-from . import parser
+import parser
 
 
 def get_full_schedule_link(branch, study_form, group):
