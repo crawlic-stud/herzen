@@ -9,7 +9,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from herzen import parser
 
 
-API_TOKEN = "5676338319:AAECvna0CqsQotHAQ9JCvyHCO6g36Q4L2BM"
+API_TOKEN = ""
 
 
 logging.basicConfig(level=logging.INFO)
