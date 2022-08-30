@@ -6,6 +6,9 @@ from datetime import datetime, timedelta
 from . import parser
 
 
+MSG_END = "msgend"
+
+
 def get_full_schedule_link(branch, study_form, group):
     return parser.get_schedule_data()[branch][study_form][group]["полное расписание"]
 
@@ -55,7 +58,7 @@ def process_row(row):
 
     # если день недели
     else:
-        row_text += f"\n<u><b>\n{ths[0].upper()}</b></u>\n"
+        row_text += f"\n{MSG_END}<u><b>\n{ths[0].upper()}</b></u>\n"
 
     # добавляются дисциплины если есть
     if tds:
@@ -65,7 +68,6 @@ def process_row(row):
 
 
 def get_table_from_link(link):
-    print(link)
     req = requests.get(link)
     if req.status_code != 200:
         return "Bad response"
@@ -73,7 +75,7 @@ def get_table_from_link(link):
     soup = bs4.BeautifulSoup(req.text, "html.parser")
     table = soup.find("table", class_="schedule")
     if table is None:
-        return "Расписание не найдено."
+        return [f"<a href='{link}'>Расписание не найдено :(</a>"]
 
     body = table.find("tbody")
     rows = body.find_all("tr")
@@ -81,7 +83,8 @@ def get_table_from_link(link):
     text = ""
     for row in rows:
         text += process_row(row)
-    return text
+    texts = list(filter(lambda x: x and len(x) > 1, text.split(MSG_END)))
+    return texts
 
 
 if __name__ == "__main__":

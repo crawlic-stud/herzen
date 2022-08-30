@@ -13,7 +13,7 @@ class UserData:
 
 @dataclass
 class User:
-    user_id: str
+    user_id: int
     data: UserData
 
 
@@ -23,15 +23,20 @@ class Database:
          fba.initialize_app(cred, {'databaseURL': database_url})
          self.ref = db.reference("/")
 
-    def get_user(self, user_id):
-        user = self.ref.get().get(user_id)
-        return user
+    def get_user_data(self, user_id):
+        try:
+            all_users = self.ref.get()
+            user = all_users.get(str(user_id))
+            data_obj = UserData(**user)
+            return data_obj
+        except TypeError:
+            return False
 
     def get_all_users(self):
         return self.ref.get()
 
     def set_user(self, user):
-        self.ref.child(user.user_id).set(asdict(user.data))
+        self.ref.child(str(user.user_id)).set(asdict(user.data))
             
 
 user = User("test_user",
@@ -42,6 +47,6 @@ user = User("test_user",
     )
 )
 
-database = Database("https://herzenbot-default-rtdb.europe-west1.firebasedatabase.app/", "firebase_key.json")
-database.set_user(user)
-print(database.get_user(user.user_id))
+
+if __name__ == "__main__":
+    pass
