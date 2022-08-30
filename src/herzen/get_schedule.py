@@ -40,7 +40,7 @@ def process_row(row):
 
     # если дисциплин больше одной в списке, значит разделено на группы
     if len(tds) > 1:
-        tds = [f"{i + 1} группа: \n\t\t<i>{t}</i>" for i, t in enumerate(tds)]
+        tds = [f"{i + 1} группа: \n\t\t{t}" for i, t in enumerate(tds)]
 
     # если есть <a> в списке дисциплин
     for a_tag, a_text in zip(a_tags, a_texts):
@@ -85,7 +85,7 @@ def get_table_from_link(link):
     text = ""
     for row in rows:
         text += process_row(row)
-    text += f"\n*расписание взято с <a href='{link}'>официального сайта {get_random_emoji()}</a>\n"
+    text += f"\n*расписание взято с <a href='{link}'>оф. сайта {get_random_emoji()}</a>\n"
     texts = list(filter(lambda x: x and len(x) > 1, text.split(MSG_END)))
     return texts
 

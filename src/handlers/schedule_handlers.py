@@ -51,6 +51,20 @@ class DateForm(StatesGroup):
     ask = State()  
 
 
+# one line date command
+@dp.message_handler(lambda message: get_valid_date(message.text.split()[-1]))
+async def send_date(message):
+    user_data = database.get_user_data(message.from_id)
+    if user_data:
+        date = get_valid_date(message.text.split()[-1])
+        date_link = get_date_schedule_link(**asdict(user_data))
+        schedule_link = construct_one_day_link(date_link, date)
+        await send_schedule(message, get_table_from_link(schedule_link))
+    else:
+        await message.answer(NEED_REGISTER_MESSAGE)
+
+
+# date command which asks to enter date
 @dp.message_handler(commands=["date"])
 async def send_date(message, state):
     await types.ChatActions.typing()
@@ -64,16 +78,22 @@ async def send_date(message, state):
         await message.answer(NEED_REGISTER_MESSAGE)
 
 
+def get_valid_date(date_str):
+    try:
+        date = datetime.strptime(date_str.replace("/", ".").replace("-", "."), "%d.%m.%Y")
+        return date
+    except ValueError:
+        return False
+
 @dp.message_handler(state=DateForm.ask)
 async def process_date(message, state):
-    date_str = message.text.replace("/", ".").replace("-", ".")
-    try:
-        date = datetime.strptime(date_str, "%d.%m.%Y")
+    date = get_valid_date(message.text)
+    if date:
         async with state.proxy() as data:
             date_link = get_date_schedule_link(**asdict(data["user_data"]))
             schedule_link = construct_one_day_link(date_link, date)
             await send_schedule(message, get_table_from_link(schedule_link))
-    except ValueError:
+    else:
         await message.answer("Неверный формат даты.")
     
     await state.finish()
