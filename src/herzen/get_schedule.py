@@ -3,6 +3,8 @@ import bs4
 
 from datetime import datetime, timedelta
 
+from utils import get_random_emoji
+
 from . import parser
 
 
@@ -42,7 +44,7 @@ def process_row(row):
 
     # если есть <a> в списке дисциплин
     for a_tag, a_text in zip(a_tags, a_texts):
-        tds = [td.replace(a_text, str(a_tag)) for td in tds]
+        tds = [td.replace(a_text, f"<i>{str(a_tag)}</i>") for td in tds]
 
     # если есть неделя с временем
     if len(ths) > 1:
@@ -62,7 +64,7 @@ def process_row(row):
 
     # добавляются дисциплины если есть
     if tds:
-        row_text += "\t\t<i>" + "\n".join(tds) + "</i>\n" \
+        row_text += "\t\t" + "\n".join(tds) + "\n" \
             if not any("группа" in td for td in tds) else "\n".join(tds) + "\n"
     return row_text
 
@@ -75,7 +77,7 @@ def get_table_from_link(link):
     soup = bs4.BeautifulSoup(req.text, "html.parser")
     table = soup.find("table", class_="schedule")
     if table is None:
-        return [f"<a href='{link}'>Расписание не найдено :(</a>"]
+        return [f"<a href='{link}'>Расписание</a> не найдено :("]
 
     body = table.find("tbody")
     rows = body.find_all("tr")
@@ -83,6 +85,7 @@ def get_table_from_link(link):
     text = ""
     for row in rows:
         text += process_row(row)
+    text += f"\n*расписание взято с <a href='{link}'>официального сайта {get_random_emoji()}</a>\n"
     texts = list(filter(lambda x: x and len(x) > 1, text.split(MSG_END)))
     return texts
 

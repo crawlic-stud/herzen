@@ -1,4 +1,5 @@
 from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram import types
 
 from dataclasses import asdict
 from datetime import datetime
@@ -12,6 +13,7 @@ from messages import *
 
 @dp.message_handler(commands=["today"])
 async def send_today(message):
+    await types.ChatActions.typing()
     user_data = database.get_user_data(message.from_id)
     if user_data:
         date_link = get_date_schedule_link(**asdict(user_data))
@@ -23,6 +25,7 @@ async def send_today(message):
 
 @dp.message_handler(commands=["tomorrow"])
 async def send_tomorrow(message):
+    await types.ChatActions.typing()
     user_data = database.get_user_data(message.from_id)
     if user_data:
         date_link = get_date_schedule_link(**asdict(user_data))
@@ -34,6 +37,7 @@ async def send_tomorrow(message):
 
 @dp.message_handler(commands=["week"])
 async def send_week(message):
+    await types.ChatActions.typing()
     user_data = database.get_user_data(message.from_id)
     if user_data:
         schedule_link = get_full_schedule_link(**asdict(user_data))
@@ -49,6 +53,7 @@ class DateForm(StatesGroup):
 
 @dp.message_handler(commands=["date"])
 async def send_date(message, state):
+    await types.ChatActions.typing()
     user_data = database.get_user_data(message.from_id)
     if user_data:
         async with state.proxy() as data:

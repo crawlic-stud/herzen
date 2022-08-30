@@ -8,7 +8,7 @@ from config import dp, database, bot
 from herzen.get_schedule import get_date_schedule_link, get_full_schedule_link, get_table_from_link, get_today_link
 from database import User, UserData
 from messages import CANCEL_REGISTRATION_MESSAGE
-from utils import create_inline_keyboard
+from utils import create_inline_list, create_inline_table
 
 
 # states
@@ -26,12 +26,12 @@ async def process_branch_state(query, state):
 
         await bot.answer_callback_query(query.id, f"Выбрано {data['branch']}")
         if (len(data["study_forms"]) > 1):
-            await query.message.edit_text("Выберите форму обучения:", reply_markup=create_inline_keyboard(data["study_forms"]))
+            await query.message.edit_text("Выберите форму обучения:", reply_markup=create_inline_list(data["study_forms"]))
             await UserForm.study_form.set()
         else:
             data["study_form"] = data["study_forms"][0]
             data["groups"] = list(data["data"][data["branch"]][data["study_form"]].keys())
-            await query.message.edit_text("Выберите группу:", reply_markup=create_inline_keyboard(data["groups"]))
+            await query.message.edit_text("Выберите группу:", reply_markup=create_inline_table(data["groups"]))
             await UserForm.group.set()
 
 
@@ -42,7 +42,7 @@ async def process_study_form_state(query, state):
 
         await bot.answer_callback_query(query.id, f"Выбрано {data['study_form']}")
         data["groups"] = list(data["data"][data["branch"]][data["study_form"]].keys())
-        await query.message.edit_text("Выберите группу:", reply_markup=create_inline_keyboard(data["groups"]))
+        await query.message.edit_text("Выберите группу:", reply_markup=create_inline_table(data["groups"]))
         await UserForm.group.set()
 
 
@@ -83,7 +83,7 @@ async def start_register(message, state):
         data["data"] = parser.get_schedule_data()
         data["branches"] = list(data["data"].keys())
         await message.answer("Выберите филиал/факультет из предложенного списка:", 
-            reply_markup=create_inline_keyboard(data["branches"]))
+            reply_markup=create_inline_list(data["branches"]))
     
 
 @dp.message_handler(commands=["cancel"], state=UserForm.all_states)

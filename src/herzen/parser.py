@@ -32,7 +32,7 @@ def get_schedule_data():
 
         for study_form, ul in zip(study_forms, uls):
             lis = get_lis(ul)
-            study_groups = [li.find(text=True, recursive=False).strip().split(", ")[-1] for li in lis]
+            study_groups = [li.find(text=True, recursive=False).strip().split(", ")[-1].replace("группа ", "") for li in lis]
             
             schedule_data[branch][study_form] = {group: None for group in study_groups}
 
