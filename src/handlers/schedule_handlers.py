@@ -9,9 +9,14 @@ from herzen.get_schedule import get_date_schedule_link, get_today_link, get_tomo
 from herzen.get_schedule import get_table_from_link
 from utils import send_schedule
 from messages import *
+from handlers.spam_handler import on_spam
+
+
+THROTTLE_RATE = 10
 
 
 @dp.message_handler(commands=["today"])
+@dp.throttled(on_spam, rate=THROTTLE_RATE)
 async def send_today(message):
     await types.ChatActions.typing()
     user_data = database.get_user_data(message.from_id)
@@ -24,6 +29,7 @@ async def send_today(message):
 
 
 @dp.message_handler(commands=["tomorrow"])
+@dp.throttled(on_spam, rate=THROTTLE_RATE)
 async def send_tomorrow(message):
     await types.ChatActions.typing()
     user_data = database.get_user_data(message.from_id)
@@ -36,6 +42,7 @@ async def send_tomorrow(message):
 
 
 @dp.message_handler(commands=["week"])
+@dp.throttled(on_spam, rate=THROTTLE_RATE)
 async def send_week(message):
     await types.ChatActions.typing()
     user_data = database.get_user_data(message.from_id)
@@ -53,6 +60,7 @@ class DateForm(StatesGroup):
 
 # one line date command
 @dp.message_handler(lambda message: get_valid_date(message.text.split()[-1]))
+@dp.throttled(on_spam, rate=THROTTLE_RATE)
 async def send_date(message):
     user_data = database.get_user_data(message.from_id)
     if user_data:
@@ -66,6 +74,7 @@ async def send_date(message):
 
 # date command which asks to enter date
 @dp.message_handler(commands=["date"])
+@dp.throttled(on_spam, rate=THROTTLE_RATE)
 async def send_date(message, state):
     await types.ChatActions.typing()
     user_data = database.get_user_data(message.from_id)

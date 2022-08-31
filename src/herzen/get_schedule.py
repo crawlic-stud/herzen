@@ -76,15 +76,21 @@ def get_table_from_link(link):
 
     soup = bs4.BeautifulSoup(req.text, "html.parser")
     table = soup.find("table", class_="schedule")
+
+    schedule_not_found = [f"<a href='{link}'>Расписание занятий</a> не найдено :("]
     if table is None:
-        return [f"<a href='{link}'>Расписание</a> не найдено :("]
+        return schedule_not_found
 
     body = table.find("tbody")
     rows = body.find_all("tr")
 
     text = ""
     for row in rows:
-        text += process_row(row)
+        try:
+            text += process_row(row)
+        except Exception:
+            return schedule_not_found
+
     text += f"\n*расписание взято с <a href='{link}'>оф. сайта {get_random_emoji()}</a>\n"
     texts = list(filter(lambda x: x and len(x) > 1, text.split(MSG_END)))
     return texts

@@ -2,13 +2,15 @@ import logging
 from venv import create
 
 from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.utils.exceptions import Throttled
 
 from herzen import parser
 from config import dp, database, bot
-from herzen.get_schedule import get_date_schedule_link, get_full_schedule_link, get_table_from_link, get_today_link
 from database import User, UserData
 from messages import CANCEL_REGISTRATION_MESSAGE
+from keyboards import REGISTER_KEYBOARD
 from utils import create_inline_list, create_inline_table
+from handlers.spam_handler import on_spam
 
 
 # states
@@ -18,7 +20,46 @@ class UserForm(StatesGroup):
     group = State()
 
 
-@dp.callback_query_handler(state=UserForm.branch)
+@dp.message_handler(commands=["register"])
+@dp.throttled(on_spam, rate=3)
+async def start_register(message, state):
+    user_data = database.get_user_data(message.from_id)
+    if user_data:
+        await message.answer(f"<b>Пользователь уже зарегистрирован, текущие данные:</b>\n - {user_data.branch}\n\
+ - {user_data.study_form}\n - {user_data.group}\n\n{CANCEL_REGISTRATION_MESSAGE}")
+
+    await UserForm.branch.set()
+
+    # saving parsed data to memory storage
+    async with state.proxy() as data:
+        data["data"] = parser.get_schedule_data()
+        data["branches"] = list(data["data"].keys())
+        await message.answer("Выберите филиал/факультет из предложенного списка:", 
+            reply_markup=create_inline_list(data["branches"]))
+
+
+@dp.message_handler(commands=["me"])
+@dp.throttled(on_spam, rate=3)
+async def show_my_data(message, state):
+    user_data = database.get_user_data(message.from_id)
+    message_text = "Пользователь не найден."
+    if user_data:
+        message_text = f"<b>Текущие данные для {message.from_user.full_name}:</b>\n - {user_data.branch}\n\
+ - {user_data.study_form}\n - {user_data.group}"
+
+    await message.answer(message_text, reply_markup=REGISTER_KEYBOARD)
+
+@dp.message_handler(commands=["cancel"], state=UserForm.all_states)
+async def cancel_register(message, state):
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+    
+    await state.finish()
+    await message.answer("Процесс регистрации отменен.")
+
+
+@dp.callback_query_handler(lambda query: query.data.isdigit(), state=UserForm.branch)
 async def process_branch_state(query, state):
     async with state.proxy() as data:
         data["branch"] = data['branches'][int(query.data)]
@@ -35,7 +76,7 @@ async def process_branch_state(query, state):
             await UserForm.group.set()
 
 
-@dp.callback_query_handler(state=UserForm.study_form)
+@dp.callback_query_handler(lambda query: query.data.isdigit(), state=UserForm.study_form)
 async def process_study_form_state(query, state):
     async with state.proxy() as data:
         data["study_form"] = data["study_forms"][int(query.data)]
@@ -46,7 +87,7 @@ async def process_study_form_state(query, state):
         await UserForm.group.set()
 
 
-@dp.callback_query_handler(state=UserForm.group)
+@dp.callback_query_handler(lambda query: query.data.isdigit(), state=UserForm.group)
 async def process_group_state(query, state):
     async with state.proxy() as data:
         data["group"] = data["groups"][int(query.data)]
@@ -61,39 +102,14 @@ async def process_group_state(query, state):
                 group=data["group"]
             )
         )
-        database.set_user(user)
-
-        await query.message.edit_text(f"<b>Регистрация завершена, записанные данные:</b>\
+        success = database.set_user(user)
+        if success:
+            await query.message.edit_text(f"<b>Регистрация завершена, записанные данные:</b>\
 \n - {user.data.branch}\n - {user.data.study_form}\n - {user.data.group}", 
-            reply_markup=None)
+                reply_markup=None)
+        else:
+            await query.message.edit_text("<b>Что-то пошло не так. Попробуйте снова :(</b>", reply_markup=None)
         await state.finish()
-
-
-@dp.message_handler(commands=["register"])
-async def start_register(message, state):
-    user_data = database.get_user_data(message.from_id)
-    if user_data:
-        await message.answer(f"<b>Пользователь уже зарегистрирован, текущие данные:</b>\n - {user_data.branch}\n\
- - {user_data.study_form}\n - {user_data.group}\n\n{CANCEL_REGISTRATION_MESSAGE}")
-
-    await UserForm.branch.set()
-
-    # saving parsed data to memory storage
-    async with state.proxy() as data:
-        data["data"] = parser.get_schedule_data()
-        data["branches"] = list(data["data"].keys())
-        await message.answer("Выберите филиал/факультет из предложенного списка:", 
-            reply_markup=create_inline_list(data["branches"]))
-    
-
-@dp.message_handler(commands=["cancel"], state=UserForm.all_states)
-async def cancel_register(message, state):
-    current_state = await state.get_state()
-    if current_state is None:
-        return
-    
-    await state.finish()
-    await message.answer("Процесс регистрации отменен.")
 
 
 @dp.message_handler(state=UserForm.all_states)

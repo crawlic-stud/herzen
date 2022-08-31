@@ -2,6 +2,7 @@ import firebase_admin as fba
 from firebase_admin import db
 
 from dataclasses import dataclass, asdict
+import logging
 
 
 @dataclass
@@ -36,17 +37,18 @@ class Database:
         return self.ref.get()
 
     def set_user(self, user):
-        self.ref.child(str(user.user_id)).set(asdict(user.data))
-            
+        try:
+            self.ref.child(str(user.user_id)).set(asdict(user.data))
+        except Exception as e:
+            logging.error(str(e))
+            return False
+        return True
 
-user = User("test_user",
+if __name__ == "__main__":
+    user = User("test_user",
     UserData(
         "факультет филологический",
         "очная форма обучения",
         "бакалавриат, 3 курс, группа 3об_РУСФИЛ"
     )
 )
-
-
-if __name__ == "__main__":
-    pass

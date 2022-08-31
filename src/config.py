@@ -18,6 +18,8 @@ database = Database(
     database_url="https://herzenbot-default-rtdb.europe-west1.firebasedatabase.app/", 
     key_path="src/firebase_key.json")
 
+DONATE_LINK = "https://www.tinkoff.ru/cf/1BhnB9qPA3j"
+
 
 # commands (to botfather)
 """
@@ -25,8 +27,10 @@ today - Расписание на сегодня
 tomorrow - Расписание на завтра
 week - Расписание на неделю
 date - Расписание на определенную дату
-register - Зарегистрироваться в боте
+me - Информация о пользователе
+register - Зарегистрироваться или поменять данные
 cancel - Отменить регистрацию
 help - Помощь 
 start - Приветственное сообщение
+about - Информация о разработчике
 """

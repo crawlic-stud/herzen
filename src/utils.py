@@ -1,6 +1,7 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 import requests
 
+import random
 
 def create_inline_list(data):
     """Creates inline keyboard for list with item's index as callback_data"""
@@ -27,10 +28,11 @@ async def send_schedule(message, texts):
 
 
 def get_random_emoji():
+    emoji_on_error = random.choice("🖖 ✌️ 🐣".split(" "))
     req = requests.get("https://ranmoji.herokuapp.com/emojis/api/v.1.0/")
     if req.status_code == 200:
-        return req.json().get("emoji", "😬")
-    return "😬"
+        return req.json().get("emoji", emoji_on_error)
+    return emoji_on_error
 
 if __name__ == "__main__":
     print(get_random_emoji())
