@@ -15,7 +15,7 @@ START_DATA = "start"
 REGISTER_DATA = "register"
 
 START_KEYBOARD = InlineKeyboardMarkup().add(
-    InlineKeyboardButton("Начать работу!", callback_data=REGISTER_DATA)
+    InlineKeyboardButton("Начать работу с ботом!", callback_data=REGISTER_DATA)
 ).row(
     InlineKeyboardButton(HELP, callback_data=HELP_DATA),
     InlineKeyboardButton(ABOUT, callback_data=ABOUT_DATA)
