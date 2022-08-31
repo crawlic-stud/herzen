@@ -13,9 +13,10 @@ START = "О боте"
 START_DATA = "start"
 
 REGISTER_DATA = "register"
+SHOW_DATA = "show"
 
 START_KEYBOARD = InlineKeyboardMarkup().add(
-    InlineKeyboardButton("Начать работу с ботом!", callback_data=REGISTER_DATA)
+    InlineKeyboardButton("Начать работу с ботом", callback_data=SHOW_DATA)
 ).row(
     InlineKeyboardButton(HELP, callback_data=HELP_DATA),
     InlineKeyboardButton(ABOUT, callback_data=ABOUT_DATA)
@@ -29,11 +30,14 @@ HELP_KEYBOARD = InlineKeyboardMarkup().row(
 ABOUT_KEYBOARD = InlineKeyboardMarkup().add(
     InlineKeyboardButton(HELP, callback_data=HELP_DATA),
     InlineKeyboardButton(START, callback_data=START_DATA),
-    InlineKeyboardButton("Связаться со мной", url="https://t.me/crawlic"),
+    InlineKeyboardButton("Обр. связь", url="https://t.me/crawlic"),
     InlineKeyboardButton("Мой Github", url="https://github.com/crawlic-stud"),
-    InlineKeyboardButton("Поддержать проект", url=DONATE_LINK)
+    InlineKeyboardButton("Поддержать $", url=DONATE_LINK)
 )
 
 REGISTER_KEYBOARD = InlineKeyboardMarkup().add(
-    InlineKeyboardButton("Редактировать", callback_data=REGISTER_DATA)
+    InlineKeyboardButton("Зарегистрироваться/изменить данные", callback_data=REGISTER_DATA)
+).row(
+    InlineKeyboardButton(HELP, callback_data=HELP_DATA),
+    InlineKeyboardButton(START, callback_data=START_DATA),
 )

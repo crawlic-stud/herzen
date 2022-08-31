@@ -3,17 +3,20 @@ from aiogram.utils.exceptions import Throttled
 from config import dp, bot
 from messages import get_greeting, START_MESSAGE, HELP_MESSAGE, ABOUT_MESSAGE
 from keyboards import HELP_KEYBOARD, START_KEYBOARD, ABOUT_KEYBOARD, \
-    START_DATA, HELP_DATA, ABOUT_DATA, REGISTER_DATA
+    START_DATA, HELP_DATA, ABOUT_DATA, REGISTER_DATA, SHOW_DATA
 from utils import get_random_emoji
 from handlers.spam_handler import on_spam
-from handlers.registration_handlers import start_register
+from handlers.registration_handlers import start_register, show_user_data
 
 @dp.message_handler(commands=["start"])
 @dp.throttled(on_spam, rate=1)
-async def send_start(message):
+async def send_start(message, state):
     await message.answer(get_greeting(message.from_user.first_name, get_random_emoji()) + START_MESSAGE,
         reply_markup=START_KEYBOARD,
         disable_web_page_preview=True)
+    async with state.proxy() as data:
+        data["user_id"] = message.from_id
+        data["full_name"] = message.from_user.full_name
 
 
 @dp.message_handler(commands=["help"])
@@ -42,3 +45,5 @@ async def handle_inline_keyboard_input(query, state):
         await query.message.edit_text(START_MESSAGE, reply_markup=START_KEYBOARD, disable_web_page_preview=True)
     elif query.data == REGISTER_DATA:
         await start_register(query.message, state)
+    elif query.data == SHOW_DATA:
+        await show_user_data(query.message, query.from_user.id, query.from_user.full_name)

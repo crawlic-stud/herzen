@@ -20,29 +20,37 @@ class UserForm(StatesGroup):
     group = State()
 
 
+
 @dp.message_handler(commands=["register"])
 @dp.throttled(on_spam, rate=3)
 async def start_register(message, state):
-    user_data = database.get_user_data(message.from_id)
-    if user_data:
-        await message.answer(f"<b>Пользователь уже зарегистрирован, текущие данные:</b>\n - {user_data.branch}\n\
- - {user_data.study_form}\n - {user_data.group}\n\n{CANCEL_REGISTRATION_MESSAGE}")
-
     await UserForm.branch.set()
 
     # saving parsed data to memory storage
     async with state.proxy() as data:
         data["data"] = parser.get_schedule_data()
         data["branches"] = list(data["data"].keys())
-        await message.answer("Выберите филиал/факультет из предложенного списка:", 
+        await message.answer("<b>Регистрация.</b>\nВыберите филиал/факультет из предложенного списка:", 
             reply_markup=create_inline_list(data["branches"]))
+
+
+async def show_user_data(message, user_id, user_full_name):
+    user_data = database.get_user_data(user_id)
+        
+    message_text = "Пользователь не найден. Возможно, Вы еще не зарегистрировались?"
+    if user_data:
+        message_text = f"<b>Текущие данные для {user_full_name}:</b>\n - {user_data.branch}\n\
+ - {user_data.study_form}\n - {user_data.group}"
+
+    await message.answer(message_text, reply_markup=REGISTER_KEYBOARD)
 
 
 @dp.message_handler(commands=["me"])
 @dp.throttled(on_spam, rate=3)
 async def show_my_data(message, state):
     user_data = database.get_user_data(message.from_id)
-    message_text = "Пользователь не найден."
+
+    message_text = "Пользователь не найден. Возможно, Вы еще не зарегистрировались?"
     if user_data:
         message_text = f"<b>Текущие данные для {message.from_user.full_name}:</b>\n - {user_data.branch}\n\
  - {user_data.study_form}\n - {user_data.group}"
