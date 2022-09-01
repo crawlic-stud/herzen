@@ -6,7 +6,7 @@ then
     echo "bot setup done"
 elif [ $1 = run ] 
 then
-    python ./src/main.py
+    python3 ./src/main.py > /dev/null &
     echo "bot started"
 elif [ $1 = stop ]
 then
