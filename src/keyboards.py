@@ -30,7 +30,7 @@ HELP_KEYBOARD = InlineKeyboardMarkup().row(
 ABOUT_KEYBOARD = InlineKeyboardMarkup().add(
     InlineKeyboardButton(HELP, callback_data=HELP_DATA),
     InlineKeyboardButton(START, callback_data=START_DATA),
-    InlineKeyboardButton("Обр. связь", url="https://t.me/crawlic"),
+    InlineKeyboardButton("Мой Telegram", url="https://t.me/crawlic"),
     InlineKeyboardButton("Мой Github", url="https://github.com/crawlic-stud"),
     InlineKeyboardButton("Поддержать $", url=DONATE_LINK)
 )
