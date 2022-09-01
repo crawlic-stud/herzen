@@ -43,7 +43,7 @@ REGISTER_KEYBOARD = InlineKeyboardMarkup().add(
 )
 
 AFTER_REGISTRATION_KEYBOARD = InlineKeyboardMarkup().row(
-    InlineKeyboardButton(ABOUT, callback_data=HELP_DATA),
+    InlineKeyboardButton(HELP, callback_data=HELP_DATA),
     InlineKeyboardButton(START, callback_data=START_DATA),
     InlineKeyboardButton(ABOUT, callback_data=ABOUT_DATA),
 )
