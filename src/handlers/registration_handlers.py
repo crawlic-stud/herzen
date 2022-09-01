@@ -8,7 +8,7 @@ from herzen import parser
 from config import dp, database, bot
 from database import User, UserData
 from messages import CANCEL_REGISTRATION_MESSAGE
-from keyboards import REGISTER_KEYBOARD
+from keyboards import REGISTER_KEYBOARD, AFTER_REGISTRATION_KEYBOARD
 from utils import create_inline_list, create_inline_table
 from handlers.spam_handler import on_spam
 
@@ -116,7 +116,7 @@ async def process_group_state(query, state):
         if success:
             await query.message.edit_text(f"<b>Регистрация завершена, записанные данные:</b>\
 \n - {user.data.branch}\n - {user.data.study_form}\n - {user.data.group}", 
-                reply_markup=None)
+                reply_markup=AFTER_REGISTRATION_KEYBOARD)
         else:
             await query.message.edit_text("<b>Что-то пошло не так. Попробуйте снова :(</b>", reply_markup=None)
         await state.finish()
