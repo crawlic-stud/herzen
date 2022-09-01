@@ -4,9 +4,8 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 import logging
 
 from database import Database
+from api_token import API_TOKEN
 
-
-API_TOKEN = "5676338319:AAFWj9BrJoOR82j3JGr60L6hoA9SjjKmQ1g"
 
 logging.basicConfig(level=logging.INFO)
 
