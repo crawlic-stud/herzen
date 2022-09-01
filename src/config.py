@@ -6,7 +6,7 @@ import logging
 from database import Database
 
 
-API_TOKEN = ""
+API_TOKEN = "5676338319:AAFWj9BrJoOR82j3JGr60L6hoA9SjjKmQ1g"
 
 logging.basicConfig(level=logging.INFO)
 

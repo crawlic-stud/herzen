@@ -30,6 +30,8 @@ async def start_register(message, state):
     async with state.proxy() as data:
         data["data"] = parser.get_schedule_data()
         data["branches"] = list(data["data"].keys())
+        if "Bad response" in data["branches"]:
+            await message.answer(f"⚠️ Ошибка. Возможно, что-то не так с <a href='{parser.SCHEDULE_URL}'>сайтом</a>.")
         await message.answer("<b>Регистрация.</b>\nВыберите филиал/факультет из предложенного списка:", 
             reply_markup=create_inline_list(data["branches"]))
 

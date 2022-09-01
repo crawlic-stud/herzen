@@ -11,10 +11,10 @@ BASE_URL = "https://guide.herzen.spb.ru"
 SCHEDULE_URL = BASE_URL + "/static/schedule.php"
 
 
-def get_schedule_data():
+def get_schedule_data() -> dict:
     req = requests.get(SCHEDULE_URL)
     if req.status_code != 200:
-        return "Bad response"
+        return {"Bad response": req.status_code}
     
     soup = bs4.BeautifulSoup(req.text, "html.parser")
 
