@@ -15,6 +15,19 @@ from handlers.spam_handler import on_spam
 THROTTLE_RATE = 10
 
 
+class UserValidation:
+    def __init__(self, message):
+        self.user = database.get_user(message.from_user.id)
+        self.message = message
+
+    def user_is_registered(self):
+        return bool(self.user)
+
+    def user_has_empty_fields(self):
+        if self.user.is_registered():
+            return database.has_empty_fields(self.user.user_id)
+
+
 @dp.message_handler(commands=["today"])
 @dp.throttled(on_spam, rate=THROTTLE_RATE)
 async def send_today(message):

@@ -18,7 +18,7 @@ database = Database(
     key_path="src/firebase_key.json")
 
 DONATE_LINK = "https://www.tinkoff.ru/cf/1BhnB9qPA3j"
-
+ADMIN_ID = 361944343
 
 # commands (to botfather)
 """

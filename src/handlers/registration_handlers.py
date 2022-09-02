@@ -109,7 +109,9 @@ async def process_group_state(query, state):
             data=UserData(
                 branch=data["branch"],
                 study_form=data["study_form"],
-                group=data["group"]
+                group=data["group"],
+                username=query.from_user.username,
+                chat_id=query.from_user.chat_id,
             )
         )
         success = database.set_user(user)
