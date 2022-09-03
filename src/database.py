@@ -7,16 +7,15 @@ import logging
 
 @dataclass
 class UserData:
-    branch: str
-    study_form: str
-    group: str
-    username: str = ""
-    chat_id: int = 0
+    branch: str = ""
+    study_form: str = ""
+    group: str = ""
+    subscribed: bool = True
 
 
 @dataclass
 class User:
-    user_id: int
+    chat_id: int
     data: UserData
 
 
@@ -30,21 +29,16 @@ class Database:
         try:
             all_users = self.ref.get()
             user_data = all_users.get(str(user_id))
-            return User(user_id=user_id, data=UserData(**user_data))
+            return User(chat_id=user_id, data=UserData(**user_data))
         except TypeError:
             return None
-
-    def get_user_data(self, user_id):
-        user = self.get_user(user_id)
-        if user:
-            return user.data
 
     def get_all_users(self):
         return self.ref.get()
 
     def set_user(self, user):
         try:
-            self.ref.child(str(user.user_id)).set(asdict(user.data))
+            self.ref.child(str(user.chat_id)).set(asdict(user.data))
         except Exception as e:
             logging.error(str(e))
             return False
@@ -57,11 +51,10 @@ class Database:
 
         # iterate over keys which is ids
         for user_id in users: 
-            user_obj = User(user_id, UserData(**users[user_id]))
+            user_obj = User(user_id, UserData())
             self.set_user(user_obj)           
 
-    def user_has_empty_fields(self, user_id):
-        user = self.get_user(user_id)
+    def user_has_empty_fields(self, user):
         if not user:
             return False
 
@@ -79,4 +72,4 @@ if __name__ == "__main__":
     )
 
     database.update_all_users_fields()
-    print(database.user_has_empty_fields(361944343))
+    #print(database.user_has_empty_fields(361944343))

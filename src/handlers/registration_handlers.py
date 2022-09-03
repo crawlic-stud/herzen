@@ -36,12 +36,13 @@ async def start_register(message, state):
             reply_markup=create_inline_list(data["branches"]))
 
 
-async def show_user_data(message, user_id, user_full_name):
-    user_data = database.get_user_data(user_id)
-        
+async def show_user_data(message, user_id):
+    user = database.get_user(user_id)
+
     message_text = "Пользователь не найден. Возможно, Вы еще не зарегистрировались?"
-    if user_data:
-        message_text = f"<b>Текущие данные для {user_full_name}:</b>\n - {user_data.branch}\n\
+    if user or not database.user_has_empty_fields(user):
+        user_data = user.data
+        message_text = f"<b>Текущие данные:</b>\n - {user_data.branch}\n\
  - {user_data.study_form}\n - {user_data.group}"
 
     await message.answer(message_text, reply_markup=REGISTER_KEYBOARD)
@@ -50,11 +51,12 @@ async def show_user_data(message, user_id, user_full_name):
 @dp.message_handler(commands=["me"])
 @dp.throttled(on_spam, rate=3)
 async def show_my_data(message, state):
-    user_data = database.get_user_data(message.from_id)
+    user = database.get_user(message.chat.id)
 
     message_text = "Пользователь не найден. Возможно, Вы еще не зарегистрировались?"
-    if user_data:
-        message_text = f"<b>Текущие данные для {message.from_user.full_name}:</b>\n - {user_data.branch}\n\
+    if user or not database.user_has_empty_fields(user):
+        user_data = user.data
+        message_text = f"<b>Текущие данные:</b>\n - {user_data.branch}\n\
  - {user_data.study_form}\n - {user_data.group}"
 
     await message.answer(message_text, reply_markup=REGISTER_KEYBOARD)
@@ -105,13 +107,11 @@ async def process_group_state(query, state):
         await bot.answer_callback_query(query.id, f"Выбрано {data['group']}")
 
         user = User(
-            user_id=query.from_user.id,
+            chat_id=query.message.chat.id,
             data=UserData(
                 branch=data["branch"],
                 study_form=data["study_form"],
                 group=data["group"],
-                username=query.from_user.username,
-                chat_id=query.from_user.chat_id,
             )
         )
         success = database.set_user(user)

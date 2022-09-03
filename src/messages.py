@@ -2,6 +2,7 @@ from config import DONATE_LINK
 
 
 NEED_REGISTER_MESSAGE = "Пользователь не зарегистрирован. Чтобы зарегистрироваться используйте команду /register"
+UPDATE_REGISTRATION_MESSAGE = "Необходимо обновить некоторые данные пользователя. Пожалуйста, используйте команду /register"
 
 CANCEL_REGISTRATION_MESSAGE = "Для выхода из формы регистрации - используйте команду /cancel"
 

@@ -46,4 +46,4 @@ async def handle_inline_keyboard_input(query, state):
     elif query.data == REGISTER_DATA:
         await start_register(query.message, state)
     elif query.data == SHOW_DATA:
-        await show_user_data(query.message, query.from_user.id, query.from_user.full_name)
+        await show_user_data(query.message, query.from_user.id)

@@ -11,11 +11,11 @@ from . import parser
 MSG_END = "msgend"
 
 
-def get_full_schedule_link(branch, study_form, group):
+def get_full_schedule_link(branch, study_form, group, **kwargs):
     return parser.get_schedule_data()[branch][study_form][group]["полное расписание"]
 
 
-def get_date_schedule_link(branch, study_form, group):
+def get_date_schedule_link(branch, study_form, group, **kwargs):
     return parser.get_schedule_data()[branch][study_form][group]["расписание по датам"]
 
 
