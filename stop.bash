@@ -1,4 +1,4 @@
 #!/bin/bash
 
-pkill -f ./src/main.py
+pkill -f /root/bots/herzen-schedule-bot/src/main.py
 echo "bot stopped"
