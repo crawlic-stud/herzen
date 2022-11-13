@@ -17,8 +17,9 @@ database = Database(
     database_url="https://herzenbot-default-rtdb.europe-west1.firebasedatabase.app/", 
     key_path="src/firebase_key.json")
 
-DONATE_LINK = "https://www.tinkoff.ru/cf/1BhnB9qPA3j"
-ADMIN_ID = 361944343
+DONATE_LINK = "https://capu.st/crawlic-dev"
+
+CALENDAR = "📅 Календарь"
 
 # commands (to botfather)
 """
