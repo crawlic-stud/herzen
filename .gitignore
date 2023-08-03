@@ -2,4 +2,4 @@ test.py
 firebase_key.json
 venv
 api_token.py
-
+.env

@@ -1,0 +1,9 @@
+version: "3"
+services:
+  prod:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: herzen-schedule-bot
+    volumes:
+      - /etc/localtime:/etc/localtime
