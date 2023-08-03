@@ -1,3 +1,4 @@
+import random
 import requests
 import bs4
 
@@ -31,6 +32,10 @@ def get_tomorrow_link(base_link):
     return construct_one_day_link(base_link, datetime.now() + timedelta(days=1))
 
 
+def parse_time(time):
+    return f"<pre>⏰ {time}</pre>"
+
+
 def process_row(row):
     row_text = ""
     ths = [t.getText().strip() for t in row.find_all("th")]
@@ -48,7 +53,7 @@ def process_row(row):
 
     # если есть неделя с временем
     if len(ths) > 1:
-        row_text += f"\n<pre>{ths[0]}</pre>\n<b>неделя</b>: {ths[1]}" if ths[1] else f"\n<pre>{ths[0]}</pre>\n"
+        row_text += f"\n{parse_time(ths[0])}\n<b>неделя</b>: {ths[1]}" if ths[1] else f"\n{parse_time(ths[0])}\n"
     
     # если есть неделя, но нет времени
     elif any(len(th) < 2 for th in ths):
@@ -56,7 +61,7 @@ def process_row(row):
 
     # если только время
     elif any("—" in th for th in ths):
-        row_text += f"\n<pre>{ths[0]}</pre>\n"
+        row_text += f"\n{parse_time(ths[0])}\n"
 
     # если день недели
     else:
@@ -77,7 +82,7 @@ def get_table_from_link(link):
     soup = bs4.BeautifulSoup(req.text, "html.parser")
     table = soup.find("table", class_="schedule")
 
-    schedule_not_found = [f"<a href='{link}'>Расписание занятий</a> не найдено :("]
+    schedule_not_found = [f"<a href='{link}'>Расписание</a> не найдено {random.choice(['🤩', '😜', '🥳', '🤯', '🤤'])}"]
     if table is None:
         return schedule_not_found
 

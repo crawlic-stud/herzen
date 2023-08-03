@@ -3,3 +3,5 @@ firebase_key.json
 venv
 api_token.py
 .env
+secret.py
+__pycache__

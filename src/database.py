@@ -21,9 +21,9 @@ class User:
 
 class Database:
     def __init__(self, database_url, key_path):
-         cred = fba.credentials.Certificate(key_path)
-         fba.initialize_app(cred, {'databaseURL': database_url})
-         self.ref = db.reference("/")
+        cred = fba.credentials.Certificate(key_path)
+        fba.initialize_app(cred, {'databaseURL': database_url})
+        self.ref = db.reference("/")
 
     def get_user(self, user_id):
         try:
